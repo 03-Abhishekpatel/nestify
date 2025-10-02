@@ -34,7 +34,7 @@ const randomGenerator = () => Math.random().toString(36).substring(2, 10);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "public/uploads/");
   },
   filename: (req, file, cb) => {
     cb(null, randomGenerator() + '-' + file.originalname);
