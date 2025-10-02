@@ -94,6 +94,14 @@ async function connectToMongo() {
 }
 connectToMongo();
 
+// ✅ Conditional listen for local development
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
 // ✅ Export handler for Vercel
 module.exports = app;
 module.exports.handler = serverless(app);
