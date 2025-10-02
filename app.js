@@ -47,7 +47,7 @@ const multerOptions = { storage };
 app.use(multer(multerOptions).single('photo'));
 
 // ✅ Serve static files from public
-app.use(express.static(path.join(rootDir, 'public')));
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
