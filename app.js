@@ -34,7 +34,7 @@ const randomGenerator = () => Math.random().toString(36).substring(2, 10);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/uploads/");
+    cb(null, "public/uploads/"); // Store inside public/uploads
   },
   filename: (req, file, cb) => {
     cb(null, randomGenerator() + '-' + file.originalname);
@@ -45,11 +45,10 @@ const multerOptions = { storage };
 
 // Middleware
 app.use(multer(multerOptions).single('photo'));
+
+// ✅ Serve static files from public
 app.use(express.static(path.join(rootDir, 'public')));
-app.use('/uploads', express.static(path.join(rootDir, 'uploads')));
-app.use('/host/uploads', express.static(path.join(rootDir, 'uploads')));
-app.use('/store/uploads', express.static(path.join(rootDir, 'uploads')));
-app.use('/homes/uploads', express.static(path.join(rootDir, 'uploads')));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -68,6 +67,8 @@ app.use((req, res, next) => {
 // Routes
 app.use(authRouter);
 app.use(storeRouter);
+
+// Protect /host routes
 app.use("/host", (req, res, next) => {
   if (req.isLoggedIn) {
     next();
@@ -80,7 +81,7 @@ app.use("/host", hostRouter);
 // Error Controller
 app.use(errorsController.pageNotFound);
 
-// ✅ Mongoose connection (only once, not per request)
+// ✅ Mongoose connection (only once)
 let isConnected = false;
 async function connectToMongo() {
   if (isConnected) return;
