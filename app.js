@@ -7,6 +7,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const multer = require('multer');
 const mongoose = require('mongoose');
+const serverless = require('serverless-http');
 require('dotenv').config(); // Load .env file
 
 // Local Modules
@@ -49,9 +50,7 @@ app.use('/uploads', express.static(path.join(rootDir, 'uploads')));
 app.use('/host/uploads', express.static(path.join(rootDir, 'uploads')));
 app.use('/store/uploads', express.static(path.join(rootDir, 'uploads')));
 app.use('/homes/uploads', express.static(path.join(rootDir, 'uploads')));
-//also allow for detail page to access /uploads
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
@@ -81,16 +80,20 @@ app.use("/host", hostRouter);
 // Error Controller
 app.use(errorsController.pageNotFound);
 
-// Start Server
-const PORT = process.env.PORT || 3000;
+// ✅ Mongoose connection (only once, not per request)
+let isConnected = false;
+async function connectToMongo() {
+  if (isConnected) return;
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    isConnected = true;
+    console.log("✅ Connected to MongoDB");
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err);
+  }
+}
+connectToMongo();
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ Connected to Mongo');
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
-    });
-  })
-  .catch(err => {
-    console.error('❌ Error while connecting to Mongo:', err);
-  });
+// ✅ Export handler for Vercel
+module.exports = app;
+module.exports.handler = serverless(app);

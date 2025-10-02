@@ -28,9 +28,12 @@
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "express-validator": "^7.2.1",
+    "http": "^0.0.1-security",
     "mongodb": "^6.19.0",
     "mongoose": "^8.18.0",
     "multer": "^2.0.2",
-    "mysql2": "^3.14.3"
+    "mysql2": "^3.14.3",
+    "serverless": "^4.19.1",
+    "serverless-http": "^4.0.0"
   }
 }
